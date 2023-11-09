@@ -1,0 +1,54 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE mapper PUBLIC '-//mybatis.org//DTD Mapper 3.0//EN'
+        'http://mybatis.org/dtd/mybatis-3-mapper.dtd'>
+
+<mapper namespace='com.example.noonmybatis.mappers.UserMapper'>
+    <select id='getUserById' parameterType='int' resultType='User'>
+        SELECT user_id    as userId,
+               email_id   as emailId,
+               first_name as firstName,
+               last_name  as lastName
+        FROM user
+        WHERE USER_ID = #{userId}
+    </select>
+    <!-- Instead of referencing Fully Qualified Class Names we can register Aliases in mybatis-config.xml and use Alias names. -->
+    <resultMap type='User' id='UserResult'>
+        <id property='userId' column='user_id'/>
+        <result property='emailId' column='email_id'/>
+        <result property='password' column='password'/>
+        <result property='firstName' column='first_name'/>
+        <result property='lastName' column='last_name'/>
+    </resultMap>
+
+    <select id='getAllUsers' resultMap='UserResult'>
+        SELECT *
+        FROM user
+    </select>
+
+    <insert id='insertUser' parameterType='User'>
+        INSERT INTO user(email_id, password, first_name, last_name)
+        VALUES (#{emailId}, #{password}, #{firstName}, #{lastName})
+        <selectKey keyProperty="user_Id" resultType="int" order="AFTER">
+            select last_insert_id as id
+        </selectKey>
+    </insert>
+
+    <update id="updateUser" parameterType="User">
+        update user
+        <set>
+            <if test="emailId!=null">email_id = #{emailId},</if>
+            <if test="password != null">password = #{password},</if>
+            <if test="firstName!=null">first_name = #{firstName},</if>
+            <if test="lastName!=null">last_name = #{lastName}</if>
+        </set>
+        <where>
+            user_id =#{userId}
+        </where>
+    </update>
+
+    <delete id="deleteUser" parameterType="int">
+        delete from user
+       where user_id = #{userId}
+    </delete>
+
+</mapper>
